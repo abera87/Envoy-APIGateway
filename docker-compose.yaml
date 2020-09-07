@@ -1,0 +1,42 @@
+version: '3.8'
+
+services: 
+    envoygateway:
+        build: Envoy/
+        ports: 
+            - "9901:9901"
+            - "10000:10000"
+            - "10001:10001"
+        volumes: 
+            - ./Envoy/envoy.yaml:/etc/envoy/envoy.yaml
+            - ./Envoy/https.crt:/etc/ssl/certs/https.crt
+            - ./Envoy/key.pem:/etc/ssl/certs/key.pem
+
+
+    coffeeapi:
+        build: CoffeeService/
+        ports: 
+            - "5001:80"
+            - "5002:443"
+        environment: 
+            ASPNETCORE_URLS: "https://+;http://+"
+            ASPNETCORE_HTTPS_PORT: "5002"
+            ASPNETCORE_ENVIRONMENT: "Development"
+            ASPNETCORE_Kestrel__Certificates__Default__Password: "fstvm@123#"
+            ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+        volumes: 
+            - ${USERPROFILE}\.aspnet\https:/https/
+
+    teaapi:
+        build: TeaService/
+        ports: 
+            - "5003:80"
+            - "5004:443"
+        environment: 
+            ASPNETCORE_URLS: "https://+;http://+"
+            ASPNETCORE_HTTPS_PORT: "5004"
+            ASPNETCORE_ENVIRONMENT: "Development"
+            ASPNETCORE_Kestrel__Certificates__Default__Password: "fstvm@123#"
+            ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+        volumes: 
+            - ${USERPROFILE}\.aspnet\https:/https/
